@@ -338,7 +338,7 @@
 
         public void GetGuildVanityURL(DiscordClient client, Action<Invite> callback = null)
         {
-            client.REST.DoRequest($"/guilds/{id}/vanity-url", RequestMethod.GET, callback);
+            client.REST.DoRequest($"/guilds/{id}/vanity-url", RequestMethod.GET, null, callback);
         }
     }
 }
