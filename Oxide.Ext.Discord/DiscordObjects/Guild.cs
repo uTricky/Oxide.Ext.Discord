@@ -335,5 +335,10 @@
         {
             client.REST.DoRequest($"/guilds/{id}/embed", RequestMethod.PATCH, guildEmbed, callback);
         }
+
+        public void GetGuildVanityURL(DiscordClient client, Action<Invite> callback = null)
+        {
+            client.REST.DoRequest($"/guilds/{id}/vanity-url", RequestMethod.GET, callback);
+        }
     }
 }

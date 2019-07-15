@@ -16,7 +16,7 @@
 
         public int Remaining { get; set; }
 
-        public double Reset { get; set; }
+        public int Reset { get; set; }
 
         public bool Initialized { get; private set; } = false;
 
@@ -75,7 +75,7 @@
                 return;
             }
             
-            if (Remaining == 0 && Reset >= Time.TimeSinceEpoch())
+            if (Reset >= Time.TimeSinceEpoch())
             {
                 return;
             }
