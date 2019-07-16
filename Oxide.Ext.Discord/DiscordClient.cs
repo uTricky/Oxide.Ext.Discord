@@ -130,7 +130,7 @@ namespace Oxide.Ext.Discord
             if (returnValues.Count(x => x.Value != null) > 1)
             {
                 string conflicts = string.Join("\n", returnValues.Select(x => $"Plugin {x.Key} - {x.Value}").ToArray());
-                Interface.Oxide.LogWarning($"[Discord Ext] A hook conflict was triggered on {hookname} between:\n{conflicts}");
+                Interface.Oxide.LogWarning($"[Discord Extension] A hook conflict was triggered on {hookname} between:\n{conflicts}");
                 return null;
             }
 

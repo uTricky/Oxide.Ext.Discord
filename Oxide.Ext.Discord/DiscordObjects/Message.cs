@@ -12,7 +12,11 @@
 
         public string channel_id { get; set; }
 
+        public string guild_id { get; set; }
+
         public User author { get; set; }
+
+        public GuildMember member { get; set; }
 
         public string content { get; set; }
 
