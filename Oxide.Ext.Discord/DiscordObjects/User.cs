@@ -25,7 +25,7 @@
 
         public string email { get; set; }
 
-        public PremiumType? premium_type { get; set; }
+        public UserPremiumType? premium_type { get; set; }
 
         public static void GetCurrentUser(DiscordClient client, Action<User> callback = null)
         {
