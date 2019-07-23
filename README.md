@@ -6,11 +6,10 @@ Should you encounter a problem or bug with the extension, please feel free to cr
 
 To install the extension to your Oxide server, you must follow a few simple steps:
 1) Shutdown the server.
-2) Open the server files, and navigate to the "Managed" folder (eg. "RustDedicated/Managed")
+2) Open the server files, and navigate to the "Managed" folder (eg. "RustDedicated_Data/Managed")
 3) Download the latest release.
-4) Unzip the release.
-5) Copy the "Oxide.Ext.Discord.dll" file into your "Managed" folder.
-6) Start your server!
+4) Copy the "Oxide.Ext.Discord.dll" file into your "Managed" folder.
+5) Start your server!
 
 ## Getting your API Key
 
