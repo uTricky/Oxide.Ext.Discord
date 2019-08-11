@@ -19,9 +19,13 @@
 
         public bool? mfa_enabled { get; set; }
 
+        public string locale { get; set; }
+
         public bool? verified { get; set; }
 
         public string email { get; set; }
+
+        public UserPremiumType? premium_type { get; set; }
 
         public static void GetCurrentUser(DiscordClient client, Action<User> callback = null)
         {
@@ -63,6 +67,16 @@
             client.REST.DoRequest($"/users/@me/channels", RequestMethod.GET, null, callback);
         }
 
+        public void CreateDM(DiscordClient client, Action<Channel> callback = null)
+        {
+            var jsonObj = new Dictionary<string, string>()
+            {
+                { "recipient_id", this.id }
+            };
+
+            client.REST.DoRequest("/users/@me/channels", RequestMethod.POST, jsonObj, callback);
+        }
+
         public void CreateGroupDM(DiscordClient client, string[] accessTokens, List<Nick> nicks, Action<Channel> callback = null)
         {
             var nickDict = nicks.ToDictionary(k => k.id, v => v.nick);
@@ -79,16 +93,6 @@
         public void GetUserConnections(DiscordClient client, Action<List<Connection>> callback = null)
         {
             client.REST.DoRequest($"/users/@me/connections", RequestMethod.GET, null, callback);
-        }
-
-        public void CreateDM(DiscordClient client, Action<Channel> callback = null)
-        {
-            var jsonObj = new Dictionary<string, string>()
-            {
-                { "recipient_id", this.id }
-            };
-
-            client.REST.DoRequest("/users/@me/channels", RequestMethod.POST, jsonObj, callback);
         }
 
         public void GroupDMAddRecipient(DiscordClient client, Channel channel, string accessToken, Action callback = null) => GroupDMAddRecipient(client, channel.id, accessToken, this.username, callback);

@@ -27,7 +27,7 @@
 
         public string embed_channel_id { get; set; }
 
-        public int? verification_level { get; set; }
+        public GuildVerificationLevel? verification_level { get; set; }
 
         public int? default_message_notifications { get; set; }
 
@@ -39,13 +39,15 @@
 
         public List<string> features { get; set; }
 
-        public int? mfa_level { get; set; }
+        public GuildMFALevel? mfa_level { get; set; }
 
         public string application_id { get; set; }
 
         public bool? widget_enabled { get; set; }
 
         public string widget_channel_id { get; set; }
+
+        public string system_channel_id { get; set; }
 
         public string joined_at { get; set; }
 
@@ -63,7 +65,21 @@
 
         public List<Presence> presences { get; set; }
 
-        public static void CreateGuild(DiscordClient client, string name, string region, string icon, int? verificationLevel, int? defaultMessageNotifications, List<Role> roles, List<Channel> channels, Action<Guild> callback = null)
+        public int? max_presences { get; set; }
+
+        public int? max_members { get; set; }
+
+        public string vanity_url_code { get; set; }
+
+        public string description { get; set; }
+
+        public string banner { get; set; }
+
+        public GuildPremiumTier? premium_tier { get; set; }
+
+        public int? premium_subscription_count { get; set; }
+
+        public static void CreateGuild(DiscordClient client, string name, string region, string icon, GuildVerificationLevel? verificationLevel, int? defaultMessageNotifications, List<Role> roles, List<Channel> channels, Action<Guild> callback = null)
         {
             var jsonObj = new Dictionary<string, object>()
             {
@@ -334,6 +350,11 @@
         public void ModifyGuildEmbed(DiscordClient client, GuildEmbed guildEmbed, Action<GuildEmbed> callback = null)
         {
             client.REST.DoRequest($"/guilds/{id}/embed", RequestMethod.PATCH, guildEmbed, callback);
+        }
+
+        public void GetGuildVanityURL(DiscordClient client, Action<Invite> callback = null)
+        {
+            client.REST.DoRequest($"/guilds/{id}/vanity-url", RequestMethod.GET, null, callback);
         }
     }
 }

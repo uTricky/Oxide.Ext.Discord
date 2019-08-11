@@ -10,6 +10,8 @@
 
         public ChannelType? type { get; set; }
 
+        public string guild_id { get; set; }
+
         public int? position { get; set; }
 
         public List<Overwrite> permission_overwrites { get; set; }
@@ -18,9 +20,13 @@
 
         public string topic { get; set; }
 
+        public bool? nsfw { get; set; }
+
         public int? bitrate { get; set; }
 
         public int? user_limit { get; set; }
+
+        public int? rate_limit_per_user { get; set; }
 
         public List<User> recipients { get; set; }
 

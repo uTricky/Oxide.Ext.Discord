@@ -113,11 +113,10 @@ namespace Oxide.Ext.Discord.WebSockets
 
                             if (ready.Guilds.Count > 1)
                             {
-                                Interface.Oxide.LogWarning($"[Oxide.Ext.Discord] Your bot was found in more than one Guild. Multiple guilds are not supported by this extension.");
+                                Interface.Oxide.LogWarning($"[Discord Extension] Your bot was found in {ready.Guilds.Count} Guilds. Multiple guilds are not supported by this extension.");
                             }
 
-                            if (ready.Guilds.Count == 0 &&
-                                client.Settings.Debugging)
+                            if (ready.Guilds.Count == 0 && client.Settings.Debugging)
                             {
                                 Interface.Oxide.LogDebug($"Ready event but no Guilds sent.");
                             }

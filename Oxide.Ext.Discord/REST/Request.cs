@@ -9,6 +9,7 @@
     using Oxide.Core;
     using Oxide.Core.Libraries;
     using Oxide.Ext.Discord.DiscordObjects;
+    using Oxide.Ext.Discord.Helpers;
 
     public class Request
     {
@@ -95,11 +96,13 @@
 
                 string message = this.ParseResponse(ex.Response);
 
-                Interface.Oxide.LogWarning($"[Discord Ext] An error occured whilst submitting a request to {req.RequestUri} (code {httpResponse.StatusCode}): {message}");
-                
                 if ((int)httpResponse.StatusCode == 429)
                 {
-                    Interface.Oxide.LogWarning($"[Discord Ext] Ratelimit info: remaining: {bucket.Remaining}, limit: {bucket.Limit}, reset: {bucket.Reset}, time now: {Helpers.Time.TimeSinceEpoch()}");
+                    Interface.Oxide.LogInfo($"[Discord Extension] Discord ratelimit reached. (Ratelimit info: remaining: {bucket.Remaining}, limit: {bucket.Limit}, reset: {bucket.Reset}, time now: {Helpers.Time.TimeSinceEpoch()}");
+                }
+                else
+                {
+                    Interface.Oxide.LogWarning($"[Discord Extension] An error occured whilst submitting a request to {req.RequestUri} (code {httpResponse.StatusCode}): {message}");
                 }
 
                 httpResponse.Close();

@@ -2,10 +2,12 @@
 {
     public enum ChannelType
     {
-        GuildText = 0,
+        GUILD_TEXT = 0,
         DM = 1,
-        GuildVoice = 2,
-        GroupDM = 3,
-        GuildCategory = 4
+        GUILD_VOICE = 2,
+        GROUP_DM = 3,
+        GUILD_CATEGORY = 4,
+        GUILD_NEWS = 5,
+        GUILD_STORE = 6
     }
 }
