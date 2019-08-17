@@ -2,7 +2,7 @@
 <Project>
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
-    <Version>1.0.3</Version>
+    <Version>1.0.3.0</Version>
     <AssemblyName>Oxide.Ext.Discord</AssemblyName>
     <Authors>PsychoTea</Authors>
     <Description>An Oxide extension for Discord.</Description>
