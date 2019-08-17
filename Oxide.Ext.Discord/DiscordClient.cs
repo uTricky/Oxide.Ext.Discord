@@ -56,6 +56,18 @@ namespace Oxide.Ext.Discord
                 throw new APIKeyException();
             }
 
+            if(Discord.PendingTokens.Contains(settings.ApiToken))
+            {
+                Interface.Oxide.LogError($"Connection with same token in short period.. Connection delayed for plugin {plugin.Name}");
+                Timer t = new Timer() { AutoReset = false, Interval = 5000f, Enabled = true};
+                t.Elapsed += (object sender, ElapsedEventArgs e) =>
+                {
+                    Interface.Oxide.LogError($"Delayed connection for plugin {plugin.Name} is being resumed..");
+                    Initialize(plugin, settings);
+                };
+                return;
+            }
+
             RegisterPlugin(plugin);
 
             Settings = settings;
@@ -75,6 +87,12 @@ namespace Oxide.Ext.Discord
 
                 _webSocket.Connect(WSSURL);
             });
+            Discord.PendingTokens.Add(settings.ApiToken);
+            Timer t2 = new Timer() { AutoReset = false, Interval = 5000f, Enabled = true };
+            t2.Elapsed += (object sender, ElapsedEventArgs e) =>
+            {
+                Discord.PendingTokens.Remove(settings.ApiToken);
+            };
         }
 
         public void Disconnect()
