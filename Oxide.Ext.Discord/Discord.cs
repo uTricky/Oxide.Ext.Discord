@@ -9,6 +9,8 @@
     {
         public static List<DiscordClient> Clients { get; private set; } = new List<DiscordClient>();
 
+        public static List<string> PendingTokens = new List<string>();
+
         public static void CreateClient(Plugin plugin, string apiKey)
         {
             if (plugin == null)
