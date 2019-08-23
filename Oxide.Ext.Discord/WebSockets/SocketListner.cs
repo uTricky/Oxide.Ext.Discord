@@ -16,8 +16,6 @@ namespace Oxide.Ext.Discord.WebSockets
 
         private Socket webSocket;
 
-        private bool hasConnectedOnce = false;
-
         public SocketListner(DiscordClient client, Socket socket)
         {
             this.client = client;
@@ -26,10 +24,6 @@ namespace Oxide.Ext.Discord.WebSockets
 
         public void SocketOpened(object sender, EventArgs e)
         {
-            if (this.hasConnectedOnce)
-            {
-                client.Resume();
-            }
 
             if (client.Settings.Debugging)
             {
@@ -37,8 +31,6 @@ namespace Oxide.Ext.Discord.WebSockets
             }
 
             client.CallHook("DiscordSocket_WebSocketOpened");
-
-            this.hasConnectedOnce = true;
         }
 
         public void SocketClosed(object sender, CloseEventArgs e)
@@ -51,6 +43,15 @@ namespace Oxide.Ext.Discord.WebSockets
             if (client.Settings.Debugging)
             {
                 Interface.Oxide.LogDebug($"Discord WebSocket closed. Code: {e.Code}, reason: {e.Reason}");
+            }
+
+            if (e.Code == 4006)
+            {
+                webSocket.hasConnectedOnce = false;
+                Interface.Oxide.LogWarning("[Discord Ext] Discord session no longer valid... Reconnecting...");
+                webSocket.Connect(client.WSSURL);
+                client.CallHook("DiscordSocket_WebSocketClosed", null, e.Reason, e.Code, e.WasClean);
+                return;
             }
 
             if (!e.WasClean)
@@ -466,9 +467,18 @@ namespace Oxide.Ext.Discord.WebSockets
                 {
                     Hello hello = payload.EventData.ToObject<Hello>();
                     client.CreateHeartbeat(hello.HeartbeatInterval);
-
                     // Client should now perform identification
-                    client.Identify();
+                    //client.Identify();
+                    if (webSocket.hasConnectedOnce)
+                    {
+                        Interface.Oxide.LogInfo("Attempting resume opcode...");
+                        client.Resume();
+                    }
+                    else
+                    {
+                        client.Identify();
+                        webSocket.hasConnectedOnce = true;
+                    }
                     break;
                 }
 
@@ -476,7 +486,11 @@ namespace Oxide.Ext.Discord.WebSockets
                 // that was received)
                 // This should be changed: https://discordapp.com/developers/docs/topics/gateway#heartbeating
                 // (See 'zombied or failed connections')
-                case OpCodes.HeartbeatACK: break;
+                case OpCodes.HeartbeatACK:
+                {
+                    client.HeartbeatACK = true;
+                    break;
+                }
 
                 default:
                 {

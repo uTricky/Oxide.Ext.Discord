@@ -12,6 +12,8 @@
 
         private SocketListner listner;
 
+        public bool hasConnectedOnce = false;
+
         public Socket(DiscordClient client)
         {
             this.client = client;
@@ -52,8 +54,18 @@
 
         public bool IsAlive() => socket?.IsAlive ?? false;
 
-        public bool IsClosing() => socket?.ReadyState == WebSocketState.Closing;
+        public bool IsClosing()
+        {
+            if (socket == null)
+                return false;
+            return socket.ReadyState == WebSocketState.Closing;
+        }
 
-        public bool IsClosed() => socket?.ReadyState == WebSocketState.Closed;
+        public bool IsClosed()
+        {
+            if (socket == null)
+                return true;
+            return socket.ReadyState == WebSocketState.Closed;
+        }
     }
 }
