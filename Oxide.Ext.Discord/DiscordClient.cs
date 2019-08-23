@@ -100,8 +100,6 @@ namespace Oxide.Ext.Discord
 
         public void Disconnect()
         {
-            if(Discord.PendingTokens.Contains(Settings.ApiToken))
-                Discord.PendingTokens.Remove(Settings.ApiToken);
             _webSocket?.Disconnect();
             DestroyHeartbeat();
 
