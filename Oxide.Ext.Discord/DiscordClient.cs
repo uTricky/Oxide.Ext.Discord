@@ -64,15 +64,9 @@ namespace Oxide.Ext.Discord
                 Timer t = new Timer() { AutoReset = false, Interval = 5000f, Enabled = true};
                 t.Elapsed += (object sender, ElapsedEventArgs e) =>
                 {
-                    if (Discord.PendingTokens.Contains(Settings.ApiToken))
-                    {
-                        Interface.Oxide.LogWarning($"Delayed connection for plugin {plugin.Name} is being resumed..");
-                        Initialize(plugin, settings);
-                    }
-                    else
-                    {
-                        Interface.Oxide.LogWarning($"Delayed connection for plugin {plugin.Name} is terminated.");
-                    }
+                    // TODO: Check if the connection still persists or cancelled
+                    Interface.Oxide.LogWarning($"Delayed connection for plugin {plugin.Name} is being resumed..");
+                    Initialize(plugin, settings);
                 };
                 return;
             }
