@@ -60,12 +60,12 @@ namespace Oxide.Ext.Discord
 
             if(Discord.PendingTokens.Contains(settings.ApiToken))
             {
-                Interface.Oxide.LogWarning($"Connection with same token in short period.. Connection delayed for plugin {plugin.Name}");
+                Interface.Oxide.LogWarning($"[Discord Extension] Connection with same token in short period.. Connection delayed for {plugin.Name}");
                 Timer t = new Timer() { AutoReset = false, Interval = 5000f, Enabled = true};
                 t.Elapsed += (object sender, ElapsedEventArgs e) =>
                 {
                     // TODO: Check if the connection still persists or cancelled
-                    Interface.Oxide.LogWarning($"Delayed connection for plugin {plugin.Name} is being resumed..");
+                    Interface.Oxide.LogWarning($"[Discord Extension] Delayed connection for {plugin.Name} is being resumed..");
                     Initialize(plugin, settings);
                 };
                 return;
@@ -165,7 +165,7 @@ namespace Oxide.Ext.Discord
         {
             if (_timer != null)
             {
-                Interface.Oxide.LogError($"[Oxide.Ext.Discord] Error: tried to create a heartbeat when one is already registered.");
+                Interface.Oxide.LogError($"[Discord Extension] Error: tried to create a heartbeat when one is already registered.");
                 return;
             }
 
@@ -275,7 +275,7 @@ namespace Oxide.Ext.Discord
             if(!HeartbeatACK)
             {
                 // Didn't receive an ACK, thus connection can be considered zombie, thus destructing.
-                Interface.Oxide.LogError("Discord did not respond to Heartbeat! Disconnecting..");
+                Interface.Oxide.LogError("[Discord Extension] Discord did not respond to Heartbeat! Disconnecting..");
                 _webSocket.Disconnect();
                 _webSocket.Connect(WSSURL);
                 return;
@@ -295,7 +295,7 @@ namespace Oxide.Ext.Discord
 
             if (Settings.Debugging)
             {
-                Interface.Oxide.LogDebug($"Heartbeat sent - {_timer.Interval}ms interval.");
+                Interface.Oxide.LogDebug($"[Discord Extension] Heartbeat sent - {_timer.Interval}ms interval.");
             }
             HeartbeatACK = false;
         }
