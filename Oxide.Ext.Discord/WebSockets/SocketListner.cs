@@ -62,7 +62,7 @@ namespace Oxide.Ext.Discord.WebSockets
             {
                 Interface.Oxide.LogWarning($"[Discord Ext] Discord connection closed uncleanly: code {e.Code}, Reason: {e.Reason}");
 
-                if(++retries >= 5)
+                if(retries >= 5)
                 {
                     Interface.Oxide.LogError("[Discord Ext] Exceeded number of retries... Attempting in 15 seconds.");
                     Timer reconnecttimer = new Timer() { Interval = 15000f, AutoReset = false };
@@ -73,7 +73,10 @@ namespace Oxide.Ext.Discord.WebSockets
                         Interface.Oxide.LogWarning($"[Discord Ext] Attempting to reconnect to Discord...");
                         webSocket.Connect(client.WSSURL);
                     };
+                    reconnecttimer.Start();
+                    return;
                 }
+                retries++;
 
                 Interface.Oxide.LogWarning($"[Discord Ext] Attempting to reconnect to Discord...");
 
