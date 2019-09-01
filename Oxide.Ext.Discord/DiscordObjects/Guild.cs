@@ -178,6 +178,16 @@
             client.REST.DoRequest($"/guilds/{id}/members/{userID}", RequestMethod.PATCH, jsonObj, callback);
         }
 
+        public void ModifyUsersNick(DiscordClient client, string userID, string nick, Action callback = null)
+        {
+            var jsonObj = new Dictionary<string, object>()
+            {
+                { "nick", nick }
+            };
+
+            client.REST.DoRequest($"/guilds/{id}/members/{userID}", RequestMethod.PATCH, jsonObj, callback);
+        }
+
         public void ModifyCurrentUsersNick(DiscordClient client, string nick, Action<string> callback = null)
         {
             var jsonObj = new Dictionary<string, object>()

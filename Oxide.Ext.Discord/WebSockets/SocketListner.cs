@@ -2,6 +2,7 @@ namespace Oxide.Ext.Discord.WebSockets
 {
     using System;
     using System.Linq;
+    using System.Timers;
     using Newtonsoft.Json;
     using Oxide.Core;
     using Oxide.Ext.Discord.DiscordEvents;
@@ -16,20 +17,17 @@ namespace Oxide.Ext.Discord.WebSockets
 
         private Socket webSocket;
 
-        private bool hasConnectedOnce = false;
+        private int retries;
 
         public SocketListner(DiscordClient client, Socket socket)
         {
             this.client = client;
             this.webSocket = socket;
+            retries = 0;
         }
 
         public void SocketOpened(object sender, EventArgs e)
         {
-            if (this.hasConnectedOnce)
-            {
-                client.Resume();
-            }
 
             if (client.Settings.Debugging)
             {
@@ -37,8 +35,6 @@ namespace Oxide.Ext.Discord.WebSockets
             }
 
             client.CallHook("DiscordSocket_WebSocketOpened");
-
-            this.hasConnectedOnce = true;
         }
 
         public void SocketClosed(object sender, CloseEventArgs e)
@@ -53,9 +49,31 @@ namespace Oxide.Ext.Discord.WebSockets
                 Interface.Oxide.LogDebug($"Discord WebSocket closed. Code: {e.Code}, reason: {e.Reason}");
             }
 
+            if (e.Code == 4006)
+            {
+                webSocket.hasConnectedOnce = false;
+                Interface.Oxide.LogWarning("[Discord Ext] Discord session no longer valid... Reconnecting...");
+                webSocket.Connect(client.WSSURL);
+                client.CallHook("DiscordSocket_WebSocketClosed", null, e.Reason, e.Code, e.WasClean);
+                return;
+            }
+
             if (!e.WasClean)
             {
                 Interface.Oxide.LogWarning($"[Discord Ext] Discord connection closed uncleanly: code {e.Code}, Reason: {e.Reason}");
+
+                if(++retries >= 5)
+                {
+                    Interface.Oxide.LogError("[Discord Ext] Exceeded number of retries... Attempting in 15 seconds.");
+                    Timer reconnecttimer = new Timer() { Interval = 15000f, AutoReset = false };
+                    reconnecttimer.Elapsed += (object a, ElapsedEventArgs b) =>
+                    {
+                        if (client == null) return;
+                        retries = 0;
+                        Interface.Oxide.LogWarning($"[Discord Ext] Attempting to reconnect to Discord...");
+                        webSocket.Connect(client.WSSURL);
+                    };
+                }
 
                 Interface.Oxide.LogWarning($"[Discord Ext] Attempting to reconnect to Discord...");
 
@@ -384,6 +402,10 @@ namespace Oxide.Ext.Discord.WebSockets
                             break;
                         }
 
+                        // Bots should ignore this
+                        case "PRESENCES_REPLACE":
+                            break;
+
                         case "TYPING_START":
                         {
                             TypingStart typingStart = payload.EventData.ToObject<TypingStart>();
@@ -466,9 +488,18 @@ namespace Oxide.Ext.Discord.WebSockets
                 {
                     Hello hello = payload.EventData.ToObject<Hello>();
                     client.CreateHeartbeat(hello.HeartbeatInterval);
-
                     // Client should now perform identification
-                    client.Identify();
+                    //client.Identify();
+                    if (webSocket.hasConnectedOnce)
+                    {
+                        Interface.Oxide.LogInfo("[DiscordExt] Attempting resume opcode...");
+                        client.Resume();
+                    }
+                    else
+                    {
+                        client.Identify();
+                        webSocket.hasConnectedOnce = true;
+                    }
                     break;
                 }
 
@@ -476,7 +507,11 @@ namespace Oxide.Ext.Discord.WebSockets
                 // that was received)
                 // This should be changed: https://discordapp.com/developers/docs/topics/gateway#heartbeating
                 // (See 'zombied or failed connections')
-                case OpCodes.HeartbeatACK: break;
+                case OpCodes.HeartbeatACK:
+                {
+                    client.HeartbeatACK = true;
+                    break;
+                }
 
                 default:
                 {

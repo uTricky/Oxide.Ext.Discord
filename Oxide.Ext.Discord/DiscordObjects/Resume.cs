@@ -10,7 +10,7 @@
         [JsonProperty("session_id")]
         public string SessionID;
 
-        [JsonProperty("sequence")]
+        [JsonProperty("seq")]
         public int Sequence;
     }
 }
