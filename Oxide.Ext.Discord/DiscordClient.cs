@@ -58,7 +58,7 @@ namespace Oxide.Ext.Discord
                 throw new APIKeyException();
             }
 
-            if(Discord.PendingTokens.Contains(settings.ApiToken))
+            /*if(Discord.PendingTokens.Contains(settings.ApiToken)) // Not efficient, will re-do later
             {
                 Interface.Oxide.LogWarning($"[Discord Extension] Connection with same token in short period.. Connection delayed for {plugin.Name}");
                 Timer t = new Timer() { AutoReset = false, Interval = 5000f, Enabled = true};
@@ -69,7 +69,7 @@ namespace Oxide.Ext.Discord
                     Initialize(plugin, settings);
                 };
                 return;
-            }
+            }*/
 
             RegisterPlugin(plugin);
 
@@ -90,12 +90,14 @@ namespace Oxide.Ext.Discord
 
                 _webSocket.Connect(WSSURL);
             });
-            Discord.PendingTokens.Add(settings.ApiToken);
+
+            /*Discord.PendingTokens.Add(settings.ApiToken); // Not efficient, will re-do later
             Timer t2 = new Timer() { AutoReset = false, Interval = 5000f, Enabled = true };
             t2.Elapsed += (object sender, ElapsedEventArgs e) =>
             {
-                Discord.PendingTokens.Remove(settings.ApiToken);
-            };
+                if (Discord.PendingTokens.Contains(settings.ApiToken))
+                    Discord.PendingTokens.Remove(settings.ApiToken);
+            };*/
         }
 
         public void Disconnect()
@@ -165,7 +167,7 @@ namespace Oxide.Ext.Discord
         {
             if (_timer != null)
             {
-                Interface.Oxide.LogError($"[Discord Extension] Error: tried to create a heartbeat when one is already registered.");
+                Interface.Oxide.LogWarning($"[Discord Extension] Warning: tried to create a heartbeat when one is already registered.");
                 return;
             }
 
@@ -276,7 +278,7 @@ namespace Oxide.Ext.Discord
             {
                 // Didn't receive an ACK, thus connection can be considered zombie, thus destructing.
                 Interface.Oxide.LogError("[Discord Extension] Discord did not respond to Heartbeat! Disconnecting..");
-                _webSocket.Disconnect();
+                _webSocket.Disconnect(false);
                 _webSocket.Connect(WSSURL);
                 return;
             }
@@ -286,6 +288,7 @@ namespace Oxide.Ext.Discord
                 Data = this.Sequence
             };
 
+            HeartbeatACK = false;
             string message = JsonConvert.SerializeObject(packet);
             _webSocket.Send(message);
 
@@ -297,7 +300,6 @@ namespace Oxide.Ext.Discord
             {
                 Interface.Oxide.LogDebug($"[Discord Extension] Heartbeat sent - {_timer.Interval}ms interval.");
             }
-            HeartbeatACK = false;
         }
         
         public void RequestGuildMembers(string query = "", int limit = 0)

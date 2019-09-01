@@ -2,6 +2,7 @@ namespace Oxide.Ext.Discord.WebSockets
 {
     using System;
     using System.Linq;
+    using System.Timers;
     using Newtonsoft.Json;
     using Oxide.Core;
     using Oxide.Ext.Discord.DiscordEvents;
@@ -16,10 +17,13 @@ namespace Oxide.Ext.Discord.WebSockets
 
         private Socket webSocket;
 
+        private int retries;
+
         public SocketListner(DiscordClient client, Socket socket)
         {
             this.client = client;
             this.webSocket = socket;
+            retries = 0;
         }
 
         public void SocketOpened(object sender, EventArgs e)
@@ -57,6 +61,19 @@ namespace Oxide.Ext.Discord.WebSockets
             if (!e.WasClean)
             {
                 Interface.Oxide.LogWarning($"[Discord Ext] Discord connection closed uncleanly: code {e.Code}, Reason: {e.Reason}");
+
+                if(++retries >= 5)
+                {
+                    Interface.Oxide.LogError("[Discord Ext] Exceeded number of retries... Attempting in 15 seconds.");
+                    Timer reconnecttimer = new Timer() { Interval = 15000f, AutoReset = false };
+                    reconnecttimer.Elapsed += (object a, ElapsedEventArgs b) =>
+                    {
+                        if (client == null) return;
+                        retries = 0;
+                        Interface.Oxide.LogWarning($"[Discord Ext] Attempting to reconnect to Discord...");
+                        webSocket.Connect(client.WSSURL);
+                    };
+                }
 
                 Interface.Oxide.LogWarning($"[Discord Ext] Attempting to reconnect to Discord...");
 
@@ -385,6 +402,10 @@ namespace Oxide.Ext.Discord.WebSockets
                             break;
                         }
 
+                        // Bots should ignore this
+                        case "PRESENCES_REPLACE":
+                            break;
+
                         case "TYPING_START":
                         {
                             TypingStart typingStart = payload.EventData.ToObject<TypingStart>();
@@ -471,7 +492,7 @@ namespace Oxide.Ext.Discord.WebSockets
                     //client.Identify();
                     if (webSocket.hasConnectedOnce)
                     {
-                        Interface.Oxide.LogInfo("Attempting resume opcode...");
+                        Interface.Oxide.LogInfo("[DiscordExt] Attempting resume opcode...");
                         client.Resume();
                     }
                     else
