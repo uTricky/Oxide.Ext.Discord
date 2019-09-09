@@ -53,6 +53,7 @@ namespace Oxide.Ext.Discord.WebSockets
             {
                 webSocket.hasConnectedOnce = false;
                 Interface.Oxide.LogWarning("[Discord Ext] Discord session no longer valid... Reconnecting...");
+                client.REST.Shutdown(); // Clean up buckets
                 webSocket.Connect(client.WSSURL);
                 client.CallHook("DiscordSocket_WebSocketClosed", null, e.Reason, e.Code, e.WasClean);
                 return;
@@ -71,6 +72,7 @@ namespace Oxide.Ext.Discord.WebSockets
                         if (client == null) return;
                         retries = 0;
                         Interface.Oxide.LogWarning($"[Discord Ext] Attempting to reconnect to Discord...");
+                        client.REST.Shutdown(); // Clean up buckets
                         webSocket.Connect(client.WSSURL);
                     };
                     reconnecttimer.Start();
@@ -79,7 +81,7 @@ namespace Oxide.Ext.Discord.WebSockets
                 retries++;
 
                 Interface.Oxide.LogWarning($"[Discord Ext] Attempting to reconnect to Discord...");
-
+                client.REST.Shutdown(); // Clean up buckets
                 webSocket.Connect(client.WSSURL);
             }
             else
@@ -385,6 +387,13 @@ namespace Oxide.Ext.Discord.WebSockets
                             break;
                         }
 
+                        /*
+                         * From Discord API docs:
+                         * The user object within this event can be partial, the only field which must be sent is the id field, everything else is optional.
+                         * Along with this limitation, no fields are required, and the types of the fields are not validated.
+                         * Your client should expect any combination of fields and types within this event.
+                        */
+
                         case "PRESENCE_UPDATE":
                         {
                             PresenceUpdate presenceUpdate = payload.EventData.ToObject<PresenceUpdate>();
@@ -397,7 +406,8 @@ namespace Oxide.Ext.Discord.WebSockets
 
                                 if (updatedMember != null)
                                 {
-                                    updatedMember.user = updatedPresence;
+                                    //updatedMember.user = updatedPresence;
+                                    updatedMember.user.Update(updatedPresence);
                                 }
                             }
 
@@ -483,6 +493,16 @@ namespace Oxide.Ext.Discord.WebSockets
                 case OpCodes.InvalidSession:
                 {
                     Interface.Oxide.LogInfo($"[DiscordExt] Invalid Session ID opcode recieved!");
+                    Interface.Oxide.LogInfo($"[DiscordExt] Reconnecting in 5 seconds...");
+                    Timer reconnecttimer = new Timer() { Interval = 5000f, AutoReset = false };
+                    reconnecttimer.Elapsed += (object a, ElapsedEventArgs b) =>
+                    {
+                        if (client == null) return;
+                        Interface.Oxide.LogWarning($"[Discord Ext] Attempting to reconnect to Discord...");
+                        client.REST.Shutdown(); // Clean up buckets
+                        webSocket.Connect(client.WSSURL);
+                    };
+                    reconnecttimer.Start();
                     break;
                 }
 
@@ -508,7 +528,6 @@ namespace Oxide.Ext.Discord.WebSockets
 
                 // Heartbeat ACK (sent immediately following a client heartbeat
                 // that was received)
-                // This should be changed: https://discordapp.com/developers/docs/topics/gateway#heartbeating
                 // (See 'zombied or failed connections')
                 case OpCodes.HeartbeatACK:
                 {
