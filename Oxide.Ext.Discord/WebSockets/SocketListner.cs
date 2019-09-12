@@ -49,6 +49,13 @@ namespace Oxide.Ext.Discord.WebSockets
                 Interface.Oxide.LogDebug($"Discord WebSocket closed. Code: {e.Code}, reason: {e.Reason}");
             }
 
+            if(client.requestReconnect)
+            {
+                client.requestReconnect = false;
+                webSocket.Connect(client.WSSURL);
+                return;
+            }
+
             if (e.Code == 4006)
             {
                 webSocket.hasConnectedOnce = false;
@@ -283,7 +290,13 @@ namespace Oxide.Ext.Discord.WebSockets
                             GuildMember oldMember = client.DiscordServer.members.FirstOrDefault(x => x.user.id == memberUpdated.user.id);
                             if (oldMember != null)
                             {
-                                client.DiscordServer.members.Remove(oldMember);
+                                //client.DiscordServer.members.Remove(oldMember);
+                                if(memberUpdated.user != null)
+                                    oldMember.user = memberUpdated.user;
+                                if (memberUpdated.nick != null)
+                                    oldMember.nick = memberUpdated.nick;
+                                if (memberUpdated.roles != null)
+                                    oldMember.roles = memberUpdated.roles;
                             }
 
                             client.CallHook("Discord_GuildMemberUpdate", null, memberUpdated, oldMember);

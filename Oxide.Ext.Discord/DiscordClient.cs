@@ -41,6 +41,8 @@ namespace Oxide.Ext.Discord
 
         public bool HeartbeatACK = false;
 
+        public bool requestReconnect = false;
+
         public void Initialize(Plugin plugin, DiscordSettings settings)
         {
             if (plugin == null)
@@ -278,8 +280,8 @@ namespace Oxide.Ext.Discord
             {
                 // Didn't receive an ACK, thus connection can be considered zombie, thus destructing.
                 Interface.Oxide.LogError("[Discord Extension] Discord did not respond to Heartbeat! Disconnecting..");
+                requestReconnect = true;
                 _webSocket.Disconnect(false);
-                _webSocket.Connect(WSSURL);
                 return;
             }
             var packet = new RPayload()
