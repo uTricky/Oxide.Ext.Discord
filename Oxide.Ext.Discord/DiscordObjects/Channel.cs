@@ -22,6 +22,8 @@
 
         public bool? nsfw { get; set; }
 
+        public string last_message_id { get; set; }
+
         public int? bitrate { get; set; }
 
         public int? user_limit { get; set; }
@@ -31,6 +33,15 @@
         public List<User> recipients { get; set; }
 
         public string icon { get; set; }
+
+        public string owner_id { get; set; }
+
+        public string application_id { get; set; }
+
+        public string parent_id { get; set; }
+
+        // TODO: Parse to DateTime
+        public string last_pin_timestamp { get; set; } 
 
         public static void GetChannel(DiscordClient client, string channelID, Action<Channel> callback = null)
         {

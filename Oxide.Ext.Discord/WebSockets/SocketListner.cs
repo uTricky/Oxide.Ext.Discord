@@ -354,6 +354,9 @@ namespace Oxide.Ext.Discord.WebSockets
                         case "MESSAGE_CREATE":
                         {
                             Message messageCreate = payload.EventData.ToObject<Message>();
+                            Channel c = client.DiscordServer.channels.FirstOrDefault(x => x.id == messageCreate.channel_id);
+                            int cidx = client.DiscordServer.channels.IndexOf(c);
+                            client.DiscordServer.channels[cidx].last_message_id = messageCreate.id;
                             client.CallHook("Discord_MessageCreate", null, messageCreate);
                             break;
                         }
