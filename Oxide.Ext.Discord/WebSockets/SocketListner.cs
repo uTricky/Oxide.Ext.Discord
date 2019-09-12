@@ -290,14 +290,14 @@ namespace Oxide.Ext.Discord.WebSockets
                             GuildMember oldMember = client.DiscordServer.members.FirstOrDefault(x => x.user.id == memberUpdated.user.id);
                             if (oldMember != null)
                             {
-                                //client.DiscordServer.members.Remove(oldMember);
-                                if(memberUpdated.user != null)
-                                    oldMember.user = memberUpdated.user;
+                                int index = client.DiscordServer.members.IndexOf(oldMember);
+                                if (memberUpdated.user != null)
+                                    client.DiscordServer.members[index].user = memberUpdated.user;
                                 if (memberUpdated.nick != null)
-                                    oldMember.nick = memberUpdated.nick;
+                                    client.DiscordServer.members[index].nick = memberUpdated.nick;
                                 if (memberUpdated.roles != null)
-                                    oldMember.roles = memberUpdated.roles;
-                            }
+                                    client.DiscordServer.members[index].roles = memberUpdated.roles;
+                             }
 
                             client.CallHook("Discord_GuildMemberUpdate", null, memberUpdated, oldMember);
                             break;
