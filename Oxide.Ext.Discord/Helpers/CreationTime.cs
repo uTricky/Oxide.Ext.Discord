@@ -5,15 +5,17 @@
 
     public class CreationTime
     {
-        public static DateTime GetFromUser(User user) => GetFromUserID(user.id);
+        public static DateTime? GetFromUser(User user) => GetFromID(user.id);
 
-        public static DateTime GetFromUserID(string userID)
+        public static DateTime? GetFromID(string ID)
         {
-            long id = long.Parse(userID);
+            long id = 0;
+            long.TryParse(ID, out id);
+            if (id == 0) return null;
 
             long ageInSeconds = ((id >> 22) + 1420070400000) / 1000;
 
-            return new DateTime(1970, 1, 1).AddSeconds(ageInSeconds);
+            return new DateTime(2015, 1, 1).AddSeconds(ageInSeconds);
         }
     }
 }
