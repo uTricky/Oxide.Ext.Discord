@@ -366,5 +366,79 @@
         {
             client.REST.DoRequest($"/guilds/{id}/vanity-url", RequestMethod.GET, null, callback);
         }
+
+        public void Update(Guild UpdatedGuild)
+        {
+            if (UpdatedGuild.name != null)
+                this.name = UpdatedGuild.name;
+            if (UpdatedGuild.icon != null)
+                this.icon = UpdatedGuild.icon;
+            if (UpdatedGuild.splash != null)
+                this.splash = UpdatedGuild.splash;
+            if (UpdatedGuild.owner_id != null)
+                this.owner_id = UpdatedGuild.owner_id;
+            if (UpdatedGuild.region != null)
+                this.region = UpdatedGuild.region;
+            if (UpdatedGuild.afk_channel_id != null)
+                this.afk_channel_id = UpdatedGuild.afk_channel_id;
+            if (UpdatedGuild.afk_timeout != null)
+                this.afk_timeout = UpdatedGuild.afk_timeout;
+            if (UpdatedGuild.embed_enabled != null)
+                this.embed_enabled = UpdatedGuild.embed_enabled;
+            if (UpdatedGuild.embed_channel_id != null)
+                this.embed_channel_id = UpdatedGuild.embed_channel_id;
+            if (UpdatedGuild.verification_level != null)
+                this.verification_level = UpdatedGuild.verification_level;
+            if (UpdatedGuild.default_message_notifications != null)
+                this.default_message_notifications = UpdatedGuild.default_message_notifications;
+            if (UpdatedGuild.explicit_content_filter != null)
+                this.explicit_content_filter = UpdatedGuild.explicit_content_filter;
+            if (UpdatedGuild.roles != null)
+                this.roles = UpdatedGuild.roles;
+            if (UpdatedGuild.emojis != null)
+                this.emojis = UpdatedGuild.emojis;
+            if (UpdatedGuild.features != null)
+                this.features = UpdatedGuild.features;
+            if (UpdatedGuild.mfa_level != null)
+                this.mfa_level = UpdatedGuild.mfa_level;
+            if (UpdatedGuild.application_id != null)
+                this.application_id = UpdatedGuild.application_id;
+            if (UpdatedGuild.widget_enabled != null)
+                this.widget_enabled = UpdatedGuild.widget_enabled;
+            if (UpdatedGuild.widget_channel_id != null)
+                this.widget_channel_id = UpdatedGuild.widget_channel_id;
+            if (UpdatedGuild.system_channel_id != null)
+                this.system_channel_id = UpdatedGuild.system_channel_id;
+            if (UpdatedGuild.joined_at != null)
+                this.joined_at = UpdatedGuild.joined_at;
+            if (UpdatedGuild.large != null)
+                this.large = UpdatedGuild.large;
+            if (UpdatedGuild.unavailable != null)
+                this.unavailable = UpdatedGuild.unavailable;
+            if (UpdatedGuild.member_count != null)
+                this.member_count = UpdatedGuild.member_count;
+            if (UpdatedGuild.voice_states != null)
+                this.voice_states = UpdatedGuild.voice_states;
+            if (UpdatedGuild.members != null)
+                this.members = UpdatedGuild.members;
+            if (UpdatedGuild.channels != null)
+                this.channels = UpdatedGuild.channels;
+            if (UpdatedGuild.presences != null)
+                this.presences = UpdatedGuild.presences;
+            if (UpdatedGuild.max_presences != null)
+                this.max_presences = UpdatedGuild.max_presences;
+            if (UpdatedGuild.max_members != null)
+                this.max_members = UpdatedGuild.max_members;
+            if (UpdatedGuild.vanity_url_code != null)
+                this.vanity_url_code = UpdatedGuild.vanity_url_code;
+            if (UpdatedGuild.description != null)
+                this.description = UpdatedGuild.description;
+            if (UpdatedGuild.banner != null)
+                this.banner = UpdatedGuild.banner;
+            if (UpdatedGuild.premium_tier != null)
+                this.premium_tier = UpdatedGuild.premium_tier;
+            if (UpdatedGuild.premium_subscription_count != null)
+                this.premium_subscription_count = UpdatedGuild.premium_subscription_count;
+        }
     }
 }

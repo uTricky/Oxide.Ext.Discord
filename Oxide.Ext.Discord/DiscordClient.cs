@@ -27,7 +27,7 @@ namespace Oxide.Ext.Discord
 
         public DiscordSettings Settings { get; set; } = new DiscordSettings();
 
-        public Guild DiscordServer { get; set; }
+        public List<Guild> DiscordServers { get; set; } = new List<Guild>();
 
         public int Sequence;
 
@@ -304,11 +304,11 @@ namespace Oxide.Ext.Discord
             }
         }
         
-        public void RequestGuildMembers(string query = "", int limit = 0)
+        public void RequestGuildMembers(string guild_id, string query = "", int limit = 0)
         {
             var requestGuildMembers = new GuildMembersRequest()
             {
-                GuildID = DiscordServer.id,
+                GuildID = guild_id,
                 Query = query,
                 Limit = limit
             };
@@ -323,12 +323,17 @@ namespace Oxide.Ext.Discord
             _webSocket.Send(payload);
         }
 
-        public void UpdateVoiceState(string channelId, bool selfDeaf, bool selfMute)
+        public void RequestGuildMembers(Guild guild, string query = "", int limit = 0)
+        {
+            RequestGuildMembers(guild.id, query, limit);
+        }
+
+        public void UpdateVoiceState(string guildID, string channelId, bool selfDeaf, bool selfMute)
         {
             var voiceState = new VoiceStateUpdate()
             {
                 ChannelID = channelId,
-                GuildID = DiscordServer.id,
+                GuildID = guildID,
                 SelfDeaf = selfDeaf,
                 SelfMute = selfMute
             };
@@ -353,6 +358,20 @@ namespace Oxide.Ext.Discord
 
             var payload = JsonConvert.SerializeObject(opcode);
             _webSocket.Send(payload);
+        }
+
+        public Guild GetGuild(string id)
+        {
+            return this.DiscordServers?.FirstOrDefault(x => x.id == id);
+        }
+
+        public void UpdateGuild(string g_id, Guild newguild)
+        {
+            Guild g = this.GetGuild(g_id);
+            if (g == null) return;
+            int idx = DiscordServers?.IndexOf(g) ?? -1;
+            if (idx == -1) return;
+            this.DiscordServers[idx] = newguild;
         }
 
         #endregion
