@@ -28,8 +28,11 @@
 
             if (socket != null && socket.ReadyState != WebSocketState.Closed)
             {
-                throw new SocketRunningException(client);
+                //throw new SocketRunningException(client);
+                // Assume force-reconenct
+                socket?.Close(CloseStatusCode.Abnormal);
             }
+            client.DestroyHeartbeat();
 
             socket = new WebSocket($"{url}/?v=6&encoding=json");
 
@@ -48,7 +51,7 @@
         {
             if (IsClosed()) return;
 
-            socket?.CloseAsync(normal ? CloseStatusCode.Normal : CloseStatusCode.NoStatus);
+            socket?.CloseAsync(normal ? CloseStatusCode.Normal : CloseStatusCode.Abnormal);
         }
 
         public void Send(string message, Action<bool> completed = null) => socket?.SendAsync(message, completed);

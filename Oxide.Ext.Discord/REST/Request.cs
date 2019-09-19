@@ -88,8 +88,8 @@
 
                 if (httpResponse == null)
                 {
-                    Interface.Oxide.LogException($"[Discord Ext] A web request exception occured (internal error) [RETRY={retries}/3].", ex);
-                    Interface.Oxide.LogError($"[Discord Ext] Request URL: [{Method.ToString()}] {RequestURL}");
+                    Interface.Oxide.LogException($"[Discord Extension] A web request exception occured (internal error) [RETRY={retries}/3].", ex);
+                    Interface.Oxide.LogError($"[Discord Extension] Request URL: [{Method.ToString()}] {RequestURL}");
                     // Interface.Oxide.LogError($"[Discord Ext] Exception message: {ex.Message}");
 
                     this.Close(++retries >= 3);
@@ -123,7 +123,7 @@
             }
             catch (Exception ex)
             {
-                Interface.Oxide.LogException("[Discord Ext] Request callback raised an exception", ex);
+                Interface.Oxide.LogException("[Discord Extension] Request callback raised an exception", ex);
             }
             finally
             {

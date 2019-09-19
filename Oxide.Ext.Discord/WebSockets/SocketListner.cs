@@ -59,7 +59,7 @@ namespace Oxide.Ext.Discord.WebSockets
             if (e.Code == 4006)
             {
                 webSocket.hasConnectedOnce = false;
-                Interface.Oxide.LogWarning("[Discord Ext] Discord session no longer valid... Reconnecting...");
+                Interface.Oxide.LogWarning("[Discord Extension] Discord session no longer valid... Reconnecting...");
                 client.REST.Shutdown(); // Clean up buckets
                 webSocket.Connect(client.WSSURL);
                 client.CallHook("DiscordSocket_WebSocketClosed", null, e.Reason, e.Code, e.WasClean);
@@ -68,17 +68,17 @@ namespace Oxide.Ext.Discord.WebSockets
 
             if (!e.WasClean)
             {
-                Interface.Oxide.LogWarning($"[Discord Ext] Discord connection closed uncleanly: code {e.Code}, Reason: {e.Reason}");
+                Interface.Oxide.LogWarning($"[Discord Extension] Discord connection closed uncleanly: code {e.Code}, Reason: {e.Reason}");
 
                 if(retries >= 5)
                 {
-                    Interface.Oxide.LogError("[Discord Ext] Exceeded number of retries... Attempting in 15 seconds.");
+                    Interface.Oxide.LogError("[Discord Extension] Exceeded number of retries... Attempting in 15 seconds.");
                     Timer reconnecttimer = new Timer() { Interval = 15000f, AutoReset = false };
                     reconnecttimer.Elapsed += (object a, ElapsedEventArgs b) =>
                     {
                         if (client == null) return;
                         retries = 0;
-                        Interface.Oxide.LogWarning($"[Discord Ext] Attempting to reconnect to Discord...");
+                        Interface.Oxide.LogWarning($"[Discord Extension] Attempting to reconnect to Discord...");
                         client.REST.Shutdown(); // Clean up buckets
                         webSocket.Connect(client.WSSURL);
                     };
@@ -87,7 +87,7 @@ namespace Oxide.Ext.Discord.WebSockets
                 }
                 retries++;
 
-                Interface.Oxide.LogWarning($"[Discord Ext] Attempting to reconnect to Discord...");
+                Interface.Oxide.LogWarning($"[Discord Extension] Attempting to reconnect to Discord...");
                 client.REST.Shutdown(); // Clean up buckets
                 webSocket.Connect(client.WSSURL);
             }
@@ -102,9 +102,15 @@ namespace Oxide.Ext.Discord.WebSockets
 
         public void SocketErrored(object sender, ErrorEventArgs e)
         {
-            Interface.Oxide.LogWarning($"[Discord Ext] An error has occured: Response: {e.Message}");
+            Interface.Oxide.LogWarning($"[Discord Extension] An error has occured: Response: {e.Message}");
 
             client.CallHook("DiscordSocket_WebSocketErrored", null, e.Exception, e.Message);
+
+            if (client == null) return;
+            if (retries > 0) return; // Retry timer is already triggered
+            Interface.Oxide.LogWarning($"[Discord Extension] Attempting to reconnect to Discord...");
+            client.REST.Shutdown(); // Clean up buckets
+            webSocket.Connect(client.WSSURL);
         }
 
         public void SocketMessage(object sender, MessageEventArgs e)
@@ -161,6 +167,7 @@ namespace Oxide.Ext.Discord.WebSockets
                         case "RESUMED":
                         {
                             Resumed resumed = payload.EventData.ToObject<Resumed>();
+                            Interface.Oxide.LogWarning("[Discord Extension] Session resumed!");
                             client.CallHook("Discord_Resumed", null, resumed);
                             break;
                         }
@@ -508,7 +515,7 @@ namespace Oxide.Ext.Discord.WebSockets
                         default:
                         {
                             client.CallHook("Discord_UnhandledEvent", null, payload);
-                            Interface.Oxide.LogWarning($"[Discord Ext] [Debug] Unhandled event: {payload.EventName}");
+                            Interface.Oxide.LogWarning($"[Discord Extension] [Debug] Unhandled event: {payload.EventName}");
                             break;
                         }
                     }
@@ -544,7 +551,7 @@ namespace Oxide.Ext.Discord.WebSockets
                     reconnecttimer.Elapsed += (object a, ElapsedEventArgs b) =>
                     {
                         if (client == null) return;
-                        Interface.Oxide.LogWarning($"[Discord Ext] Attempting to reconnect to Discord...");
+                        Interface.Oxide.LogWarning($"[Discord Extension] Attempting to reconnect to Discord...");
                         client.REST.Shutdown(); // Clean up buckets
                         webSocket.Connect(client.WSSURL);
                     };
@@ -561,7 +568,7 @@ namespace Oxide.Ext.Discord.WebSockets
                     //client.Identify();
                     if (webSocket.hasConnectedOnce)
                     {
-                        Interface.Oxide.LogInfo("[DiscordExt] Attempting resume opcode...");
+                        Interface.Oxide.LogWarning("[Discord Extension] Attempting resume opcode...");
                         client.Resume();
                     }
                     else
