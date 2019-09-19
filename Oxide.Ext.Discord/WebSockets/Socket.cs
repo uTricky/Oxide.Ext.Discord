@@ -26,7 +26,7 @@
                 throw new NoURLException();
             }
 
-            if (socket != null && socket.ReadyState != WebSocketState.Closed)
+            if (socket != null && socket.ReadyState != WebSocketState.Closed && socket.ReadyState != WebSocketState.Closing)
             {
                 //throw new SocketRunningException(client);
                 // Assume force-reconenct
@@ -49,7 +49,7 @@
 
         public void Disconnect(bool normal = true)
         {
-            if (IsClosed()) return;
+            if (IsClosed() || IsClosing()) return;
 
             socket?.CloseAsync(normal ? CloseStatusCode.Normal : CloseStatusCode.Abnormal);
         }

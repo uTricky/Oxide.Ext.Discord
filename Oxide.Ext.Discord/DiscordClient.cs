@@ -29,6 +29,22 @@ namespace Oxide.Ext.Discord
 
         public List<Guild> DiscordServers { get; set; } = new List<Guild>();
 
+        // TEMP for the pre-release testing
+        public static bool DepricatedWarning = false;
+        public Guild DiscordServer
+        {
+            get
+            {
+                if (!DiscordClient.DepricatedWarning)
+                {
+                    Interface.Oxide.LogWarning("[Discord Extension] DiscordClient.DiscordServer is depcreated! Use DiscordClient.DiscordServers list instead!");
+                    DiscordClient.DepricatedWarning = true;
+                }
+                return this.DiscordServers?.FirstOrDefault();
+            }
+        }
+        //-----------
+
         public int Sequence;
 
         public string SessionID;
