@@ -75,7 +75,7 @@
                 return;
             }
             
-            if (Reset >= Time.TimeSinceEpoch())
+            if (Remaining == 0 && Reset >= Time.TimeSinceEpoch())
             {
                 return;
             }

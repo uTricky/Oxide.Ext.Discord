@@ -39,6 +39,8 @@
 
         private Bucket bucket;
 
+        private byte retries = 0;
+
         public Request(RequestMethod method, string route, string endpoint, Dictionary<string, string> headers, object data, Action<RestResponse> callback)
         {
             this.Method = method;
@@ -86,11 +88,11 @@
 
                 if (httpResponse == null)
                 {
-                    Interface.Oxide.LogException($"[Discord Ext] A web request exception occured (internal error).", ex);
-                    Interface.Oxide.LogError($"[Discord Ext] Request URL: [{Method.ToString()}] {RequestURL}");
+                    Interface.Oxide.LogException($"[Discord Extension] A web request exception occured (internal error) [RETRY={retries}/3].", ex);
+                    Interface.Oxide.LogError($"[Discord Extension] Request URL: [{Method.ToString()}] {RequestURL}");
                     // Interface.Oxide.LogError($"[Discord Ext] Exception message: {ex.Message}");
 
-                    this.Close();
+                    this.Close(++retries >= 3);
                     return;
                 }
 
@@ -121,7 +123,7 @@
             }
             catch (Exception ex)
             {
-                Interface.Oxide.LogException("[Discord Ext] Request callback raised an exception", ex);
+                Interface.Oxide.LogException("[Discord Extension] Request callback raised an exception", ex);
             }
             finally
             {

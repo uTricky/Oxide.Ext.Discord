@@ -16,10 +16,22 @@
         {
             this.apiKey = apiKey;
 
+            // Version
+            string version = "";
+            var exts = Oxide.Core.Interface.Oxide.GetAllExtensions();
+            foreach (var ext in exts)
+            {
+                if (ext.Name != "Discord") continue;
+                version = $"{ext.Version.Major}.{ext.Version.Minor}.{ext.Version.Patch}";
+                break;
+            }
+            //-
+
             headers = new Dictionary<string, string>()
             {
                 { "Authorization", $"Bot {this.apiKey}" },
-                { "Content-Type", "application/json" }
+                { "Content-Type", "application/json" },
+                { "User-Agent", $"DiscordBot (https://github.com/Trickyyy/Oxide.Ext.Discord, {version})" }
             };
         }
 
