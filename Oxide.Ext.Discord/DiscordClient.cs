@@ -28,6 +28,7 @@ namespace Oxide.Ext.Discord
         public DiscordSettings Settings { get; set; } = new DiscordSettings();
 
         public List<Guild> DiscordServers { get; set; } = new List<Guild>();
+        public List<Channel> DMs { get; set; } = new List<Channel>();
 
         // TEMP for the pre-release testing
         public static bool DepricatedWarning = false;

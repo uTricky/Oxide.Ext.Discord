@@ -176,7 +176,10 @@ namespace Oxide.Ext.Discord.WebSockets
                         case "CHANNEL_CREATE":
                         {
                             Channel channelCreate = payload.EventData.ToObject<Channel>();
-                            client.GetGuild(channelCreate.guild_id).channels.Add(channelCreate);
+                            if (channelCreate.type == ChannelType.DM || channelCreate.type == ChannelType.GROUP_DM)
+                                client.DMs.Add(channelCreate);
+                            else
+                                client.GetGuild(channelCreate.guild_id).channels.Add(channelCreate);
                             client.CallHook("Discord_ChannelCreate", null, channelCreate);
                             break;
                         }
@@ -184,14 +187,22 @@ namespace Oxide.Ext.Discord.WebSockets
                         case "CHANNEL_UPDATE":
                         {
                             Channel channelUpdated = payload.EventData.ToObject<Channel>();
-                            Channel channelPrevious = client.GetGuild(channelUpdated.guild_id).channels.FirstOrDefault(x => x.id == channelUpdated.id);
+                            Channel channelPrevious = (channelUpdated.type == ChannelType.DM || channelUpdated.type == ChannelType.GROUP_DM)
+                                ? client.DMs?.FirstOrDefault(x => x.id == channelUpdated.id)
+                                : client.GetGuild(channelUpdated.guild_id).channels.FirstOrDefault(x => x.id == channelUpdated.id);
 
                             if (channelPrevious != null)
                             {
-                                client.GetGuild(channelUpdated.guild_id).channels.Remove(channelPrevious);
+                                if (channelUpdated.type == ChannelType.DM || channelUpdated.type == ChannelType.GROUP_DM)
+                                    client.DMs.Remove(channelPrevious);
+                                else
+                                    client.GetGuild(channelUpdated.guild_id).channels.Remove(channelPrevious);
                             }
 
-                            client.GetGuild(channelUpdated.guild_id).channels.Add(channelUpdated);
+                            if (channelUpdated.type == ChannelType.DM || channelUpdated.type == ChannelType.GROUP_DM)
+                                client.DMs.Add(channelUpdated);
+                            else
+                                client.GetGuild(channelUpdated.guild_id).channels.Add(channelUpdated);
 
                             client.CallHook("Discord_ChannelUpdate", null, channelUpdated, channelPrevious);
                             break;
@@ -386,8 +397,13 @@ namespace Oxide.Ext.Discord.WebSockets
                         case "MESSAGE_CREATE":
                         {
                             Message messageCreate = payload.EventData.ToObject<Message>();
-                            Channel c = client.GetGuild(messageCreate.guild_id).channels.FirstOrDefault(x => x.id == messageCreate.channel_id);
-                            c.last_message_id = messageCreate.id;
+                            Channel c;
+                            if (messageCreate.guild_id != null)
+                                c = client.GetGuild(messageCreate.guild_id)?.channels.FirstOrDefault(x => x.id == messageCreate.channel_id);
+                            else
+                                c = client.DMs.FirstOrDefault(x => x.id == messageCreate.channel_id);
+                            if(c != null)
+                                c.last_message_id = messageCreate.id;
                             client.CallHook("Discord_MessageCreate", null, messageCreate);
                             break;
                         }
