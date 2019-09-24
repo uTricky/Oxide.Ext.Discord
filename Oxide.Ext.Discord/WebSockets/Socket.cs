@@ -54,7 +54,17 @@
             socket?.CloseAsync(normal ? CloseStatusCode.Normal : CloseStatusCode.Abnormal);
         }
 
-        public void Send(string message, Action<bool> completed = null) => socket?.SendAsync(message, completed);
+        public void Dispose()
+        {
+            listner = null;
+            socket = null;
+        }
+
+        public void Send(string message, Action<bool> completed = null)
+        {
+            if (IsAlive())
+                socket?.SendAsync(message, completed);
+        }
 
         public bool IsAlive() => socket?.IsAlive ?? false;
 

@@ -42,6 +42,7 @@ namespace Oxide.Ext.Discord.WebSockets
         {
             if (e.Code == 4004)
             {
+                Interface.Oxide.LogError("[Discord Extension] Given Bot token is invalid!");
                 throw new APIKeyException();
             }
 
@@ -94,7 +95,6 @@ namespace Oxide.Ext.Discord.WebSockets
             }
             else
             {
-                client.Disconnect();
                 Discord.CloseClient(client);
             }
             
@@ -103,6 +103,26 @@ namespace Oxide.Ext.Discord.WebSockets
 
         public void SocketErrored(object sender, ErrorEventArgs e)
         {
+            if (e.Exception is APIKeyException)
+                return;
+            if(e.Exception is NoURLException)
+            {
+                Interface.Oxide.LogError("[Discord Extension] Error: WSSURL not present! Retrying..");
+                DiscordObjects.Gateway.GetGateway(client, (gateway) =>
+                {
+                    // Example: wss://gateway.discord.gg/?v=6&encoding=json
+                    string fullURL = $"{gateway.URL}/?{Connect.Serialize()}";
+
+                    if (client.Settings.Debugging)
+                    {
+                        Interface.Oxide.LogDebug($"Got Gateway url: {fullURL}");
+                    }
+
+                    client.UpdateWSSURL(fullURL);
+                    webSocket.Connect(client.WSSURL);
+                });
+                return;
+            }
             Interface.Oxide.LogWarning($"[Discord Extension] An error has occured: Response: {e.Message}");
 
             client.CallHook("DiscordSocket_WebSocketErrored", null, e.Exception, e.Message);
@@ -143,8 +163,11 @@ namespace Oxide.Ext.Discord.WebSockets
                     {
                         case "READY":
                         {
+                            /*
+                            Moved to DiscordClient.Initialized -> Not at all cases will READY be called.
                             client.UpdatePluginReference();
                             client.CallHook("DiscordSocket_Initialized");
+                            */
 
                             Ready ready = payload.EventData.ToObject<Ready>();
 

@@ -29,22 +29,14 @@ namespace Oxide.Ext.Discord
 
         public List<Guild> DiscordServers { get; set; } = new List<Guild>();
         public List<Channel> DMs { get; set; } = new List<Channel>();
-
-        // TEMP for the pre-release testing
-        public static bool DepricatedWarning = false;
+        
         public Guild DiscordServer
         {
             get
             {
-                if (!DiscordClient.DepricatedWarning)
-                {
-                    Interface.Oxide.LogWarning("[Discord Extension] DiscordClient.DiscordServer is depcreated! Use DiscordClient.DiscordServers list instead!");
-                    DiscordClient.DepricatedWarning = true;
-                }
                 return this.DiscordServers?.FirstOrDefault();
             }
         }
-        //-----------
 
         public int Sequence;
 
@@ -91,6 +83,8 @@ namespace Oxide.Ext.Discord
             }*/
 
             RegisterPlugin(plugin);
+            UpdatePluginReference(plugin);
+            CallHook("DiscordSocket_Initialized");
 
             Settings = settings;
 
@@ -105,7 +99,7 @@ namespace Oxide.Ext.Discord
 
             this.GetURL(url =>
             {
-                WSSURL = url;
+                UpdateWSSURL(url);
 
                 _webSocket.Connect(WSSURL);
             });
@@ -123,6 +117,8 @@ namespace Oxide.Ext.Discord
         {
             _webSocket?.Disconnect();
             DestroyHeartbeat();
+            _webSocket?.Dispose();
+            _webSocket = null;
 
             WSSURL = string.Empty;
 
@@ -239,6 +235,11 @@ namespace Oxide.Ext.Discord
 
                 callback.Invoke(fullURL);
             });
+        }
+
+        public void UpdateWSSURL(string fullURL)
+        {
+            WSSURL = fullURL;
         }
 
         #region Discord Events
