@@ -66,7 +66,12 @@
                 socket?.SendAsync(message, completed);
         }
 
-        public bool IsAlive() => socket?.IsAlive ?? false;
+        public bool IsAlive()
+        {
+            if (socket == null)
+                return false;
+            return socket.ReadyState == WebSocketState.Open;
+        }
 
         public bool IsClosing()
         {
