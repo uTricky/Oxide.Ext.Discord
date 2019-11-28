@@ -68,7 +68,7 @@ namespace Oxide.Plugins
         void Discord_MessageCreate(Message message)
         {
             // Add a sad reaction to the message
-            message.CreateReaction(Client, ":sad:");
+            message.CreateReaction(Client, "<emoji_name:id>");
 
             // Post the message to chat
             server.Broadcast($"Discord Message: {message.author.username} - {message.content}");
