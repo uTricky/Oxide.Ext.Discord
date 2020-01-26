@@ -166,7 +166,7 @@ void Discord_Resumed(Resumed resumed)
 ### Discord_ChannelCreate
 
 ```csharp
-void Discord_ChannelCreated(Channel channel)
+void Discord_ChannelCreate(Channel channel)
 {
     Puts("Discord Channel Created");
 }
