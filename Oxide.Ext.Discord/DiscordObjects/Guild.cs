@@ -126,7 +126,7 @@
                 { "bitrate", bitrate },
                 { "user_limit", userLimit },
                 { "permission_overwrites", permissionOverwrites },
-								{ "parent_id", parent_id }
+                { "parent_id", parent_id }
             };
 
             client.REST.DoRequest($"/guilds/{id}/channels", RequestMethod.POST, jsonObj, callback);
