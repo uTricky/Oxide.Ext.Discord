@@ -552,6 +552,20 @@ namespace Oxide.Ext.Discord.WebSockets
                             break;
                         }
 
+                        case "INVITE_CREATE":
+                        {
+                            InviteCreated invitecreatedUpdate = payload.EventData.ToObject<InviteCreated>();
+                            client.CallHook("Discord_InviteCreated", null, invitecreatedUpdate);
+                            break;
+                        }
+
+                        case "INVITE_DELETE":
+                        {
+                            InviteDeleted invitedeletedUpdate = payload.EventData.ToObject<InviteDeleted>();
+                            client.CallHook("Discord_InviteDeleted", null, invitedeletedUpdate);
+                            break;
+                        }
+
                         default:
                         {
                             client.CallHook("Discord_UnhandledEvent", null, payload);

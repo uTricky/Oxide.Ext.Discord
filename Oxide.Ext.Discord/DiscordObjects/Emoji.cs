@@ -7,8 +7,8 @@
         public string id { get; set; }
 
         public string name { get; set; }
-
-        public List<Role> roles { get; set; }
+        
+        public List<string> roles { get; set; }
 
         public User user { get; set; }
 

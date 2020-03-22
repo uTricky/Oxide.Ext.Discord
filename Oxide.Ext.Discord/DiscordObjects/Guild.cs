@@ -15,7 +15,13 @@
 
         public string splash { get; set; }
 
+        public string discovery_splash { get; set; }
+
+        public bool owner { get; set; }
+
         public string owner_id { get; set; }
+
+        public int? permissions { get; set; }
 
         public string region { get; set; }
 
@@ -49,6 +55,8 @@
 
         public string system_channel_id { get; set; }
 
+        public string rules_channel_id { get; set; }
+
         public string joined_at { get; set; }
 
         public bool? large { get; set; }
@@ -78,6 +86,10 @@
         public GuildPremiumTier? premium_tier { get; set; }
 
         public int? premium_subscription_count { get; set; }
+
+        public string preferred_locale { get; set; }
+
+        public string public_updates_channel_id { get; set; }
 
         public static void CreateGuild(DiscordClient client, string name, string region, string icon, GuildVerificationLevel? verificationLevel, int? defaultMessageNotifications, List<Role> roles, List<Channel> channels, Action<Guild> callback = null)
         {
