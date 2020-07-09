@@ -5,7 +5,7 @@
     using System.Text;
     using Oxide.Ext.Discord.Helpers;
     using Oxide.Ext.Discord.REST;
-    
+
     public class Message
     {
         public string id { get; set; }
@@ -47,6 +47,8 @@
         public string webhook_id { get; set; }
 
         public MessageType? type { get; set; }
+
+        public AllowedMentions allowed_mentions { get; set; }
 
         public void Reply(DiscordClient client, Message message, bool ping = true, Action<Message> callback = null)
         {
